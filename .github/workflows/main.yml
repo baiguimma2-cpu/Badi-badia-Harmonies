@@ -1,0 +1,26 @@
+name: Build Badi-badia Harmony
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dezipper
+        shell: bash
+        run: cmake -E tar xf *.zip
+      - name: Compiler
+        shell: bash
+        working-directory: BadiBadiaHarmony
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release --parallel
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BadiBadiaHarmony-${{ matrix.os }}
+          path: BadiBadiaHarmony/build/BadiBadiaHarmony_artefacts/Release
